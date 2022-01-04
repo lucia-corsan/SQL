@@ -1,0 +1,399 @@
+CREATE TABLE HOTEL_DELEGATION(
+	Venue NUMBER NOT NULL,
+	Id_Fac NUMBER NOT NULL,
+    Delegation VARCHAR2(30) NOT NULL,
+    Checkin_date DATE NOT NULL,
+    Checkout_date DATE NOT NULL,
+	constraint HOTEL_DELEGATION PRIMARY KEY (Venue,Id_fac,Delegation));
+    
+CREATE TABLE DELEGATION(
+	Country VARCHAR2(30) NOT NULL,
+    Num_athletes NUMBER NOT NULL,
+	constraint DELEGATION PRIMARY KEY (Country));
+
+CREATE TABLE ATHLETE(
+    ID_number NUMBER NOT NULL,
+    Name_at VARCHAR2(30) NOT NULL,
+    Surnames_at VARCHAR2(30) NOT NULL,
+    Date_birth DATE NOT NULL,
+    Sport VARCHAR2(30) NOT NULL,
+    Food_type VARCHAR2(30) NOT NULL,
+    Height NUMBER NOT NULL,
+    Weight NUMBER NOT NULL,
+    Phone NUMBER NOT NULL,
+    Email VARCHAR2(30) NULL,
+    Delegation VARCHAR2(30) NOT NULL,
+    constraint ATHLETE PRIMARY KEY(ID_number));
+    
+CREATE TABLE EVENT(
+	Code NUMBER NOT NULL,
+    Sport VARCHAR2(30) NOT NULL,
+    Sport_complex VARCHAR2(30) NOT NULL,
+    Date_event DATE NOT NULL,
+    Duration_min NUMBER NOT NULL,
+    N_part NUMBER NOT NULL,
+    N_officials NUMBER NOT NULL,
+	constraint EVENT PRIMARY KEY (Code));
+  
+CREATE TABLE PARTICIPATES(
+	Event NUMBER NOT NULL,
+    Athlete NUMBER NOT NULL,
+    Date_part DATE NOT NULL,
+	constraint PARTICIPATES PRIMARY KEY(Event,Athlete));
+    
+CREATE TABLE ATTENDS(
+	Official NUMBER NOT NULL,
+    Event NUMBER NOT NULL,
+    Date_att DATE NOT NULL,
+    Role_att VARCHAR2(30) NOT NULL,
+	constraint ATTENDS PRIMARY KEY(Official,Event));
+    
+CREATE TABLE EQUIPMENT(
+    Event NUMBER NOT NULL,
+    Equipement VARCHAR2(30) NOT NULL,
+    constraint EQUIPEMENT PRIMARY KEY(Event));
+
+CREATE TABLE VENUE(
+    Code NUMBER NOT NULL,
+    Address VARCHAR2(30) NOT NULL,
+    constraint VENUE PRIMARY KEY(Code));
+    
+CREATE TABLE SPORT_COMPLEX(
+	Name_com VARCHAR2(30) NOT NULL,
+    Opening_hours NUMBER NOT NULL,
+    Address VARCHAR2(30) NOT NULL,
+    Manager_com NUMBER NOT NULL,
+    Venue NUMBER NOT NULL,
+    Complex_type VARCHAR2(30) NOT NULL,
+	CONSTRAINT COMPLEX_TYPE CHECK (Complex_type IN ('Multisport', 'Onesport')),
+	constraint SPORT_COMPLEX PRIMARY KEY (Name_com));
+
+CREATE TABLE MULTI_COMPLEX(
+	Name_com VARCHAR2(30) NOT NULL,
+    Area NUMBER NOT NULL,
+    Num_sports NUMBER NOT NULL,
+    Num_outdoor NUMBER NOT NULL,
+    Num_indoor NUMBER NOT NULL,
+	constraint MULTI_COMPLEX PRIMARY KEY (Name_com));
+
+CREATE TABLE EMPLOYEE(
+    ID_number NUMBER NOT NULL,
+    Name_em VARCHAR2(30) NOT NULL,
+    Surnames_em VARCHAR2(30) NOT NULL,
+    Email VARCHAR2(30) NULL,
+    Employee_Type VARCHAR2(30) NOT NULL,
+    CONSTRAINT EMPLOYEE_TYPE CHECK (Employee_Type IN ('Manager', 'Supervisor', 'Maintenance', 'Cleaning', 'Security','Official')),
+    constraint EMPLOYEE PRIMARY KEY(ID_number));
+    
+CREATE TABLE FACILITY_STAFF(
+	Venue NUMBER NOT NULL,
+	Id_Fac NUMBER NOT NULL,
+    Employee NUMBER NOT NULL,
+    constraint FACILITY_STAFF PRIMARY KEY(Venue, ID_fac,Employee));
+    
+CREATE TABLE RESTAURANT(
+	Venue NUMBER NOT NULL,
+	Id_Fac NUMBER NOT NULL,
+    Food_type VARCHAR2(30) NOT NULL,
+    constraint RESTAURANT PRIMARY KEY(Venue, ID_fac,Food_type));
+
+CREATE TABLE EMP_PHONE(
+    ID_number NUMBER NOT NULL,
+    Phone NUMBER NOT NULL,
+    constraint EMP_PHONE PRIMARY KEY(ID_number, Phone));
+    
+CREATE TABLE FACILITY(
+    Venue NUMBER NOT NULL,
+    ID_fac NUMBER NOT NULL,
+    Capacity_fac NUMBER NOT NULL,
+    Manager_id NUMBER NOT NULL,
+    Facility_Type VARCHAR2(30) NOT NULL,
+    CONSTRAINT FACILITY_TYPE CHECK (Facility_type IN ('Hotel', 'Apartment', 'Restaurant')),
+    constraint FACILITY PRIMARY KEY(Venue,ID_fac));
+    
+ ALTER TABLE HOTEL_DELEGATION ADD CONSTRAINT HOTEL_DELEGATION_fk1 FOREIGN
+KEY (Delegation) REFERENCES DELEGATION(Country);
+
+ALTER TABLE HOTEL_DELEGATION ADD CONSTRAINT HOTEL_DELEGATION_fk0 FOREIGN
+KEY (Venue,ID_fac) REFERENCES FACILITY(Venue,ID_fac);
+
+ALTER TABLE ATHLETE ADD CONSTRAINT ATHLETE_fk0 FOREIGN
+KEY (Delegation) REFERENCES DELEGATION(Country);
+
+ALTER TABLE PARTICIPATES ADD CONSTRAINT PARTICIPATES_fk0 FOREIGN
+KEY (Athlete) REFERENCES ATHLETE(ID_Number);
+
+ALTER TABLE PARTICIPATES ADD CONSTRAINT PARTICIPATES_fk1 FOREIGN
+KEY (Event) REFERENCES EVENT(Code);
+
+ALTER TABLE ATTENDS ADD CONSTRAINT ATTENDS_fk0 FOREIGN
+KEY (Official) REFERENCES EMPLOYEE(ID_Number);
+
+ALTER TABLE ATTENDS ADD CONSTRAINT ATTENDS_fk1 FOREIGN
+KEY (Event) REFERENCES EVENT(Code);
+
+ALTER TABLE EQUIPMENT ADD CONSTRAINT EQUIPMENT_fk0 FOREIGN
+KEY (Event) REFERENCES EVENT(Code);
+
+ALTER TABLE EVENT ADD CONSTRAINT EVENT_fk0 FOREIGN
+KEY (Sport_complex) REFERENCES SPORT_COMPLEX(Name_com);
+
+ALTER TABLE SPORT_COMPLEX ADD CONSTRAINT SC_fk0 FOREIGN
+KEY (Manager_com) REFERENCES EMPLOYEE(ID_Number);
+
+ALTER TABLE SPORT_COMPLEX ADD CONSTRAINT SC_fk1 FOREIGN
+KEY (Venue) REFERENCES VENUE(Code);
+
+ALTER TABLE MULTI_COMPLEX ADD CONSTRAINT MC_fk0 FOREIGN
+KEY (Name_com) REFERENCES SPORT_COMPLEX(Name_com);
+
+ALTER TABLE EMP_PHONE ADD CONSTRAINT EMPH_fk0 FOREIGN
+KEY (ID_number) REFERENCES EMPLOYEE(ID_Number);
+
+ALTER TABLE FACILITY_STAFF ADD CONSTRAINT FAC_STAFF_fk0 FOREIGN
+KEY (Venue,ID_fac) REFERENCES FACILITY(Venue,ID_fac);
+
+ALTER TABLE FACILITY_STAFF ADD CONSTRAINT FAC_STAFF_fk1 FOREIGN
+KEY (Employee) REFERENCES EMPLOYEE(ID_Number);
+
+ALTER TABLE FACILITY ADD CONSTRAINT FACILITY_fk0 FOREIGN
+KEY (Venue) REFERENCES Venue(Code);
+
+ALTER TABLE FACILITY ADD CONSTRAINT FACILITY_fk1 FOREIGN
+KEY (Manager_id) REFERENCES EMPLOYEE(ID_Number);
+
+ALTER TABLE RESTAURANT ADD CONSTRAINT RESTAURANT_fk0 FOREIGN
+KEY (Venue,ID_fac) REFERENCES FACILITY(Venue,ID_fac);
+
+Insert into ATHLETE values(1,'Ana','Peleteiro',to_date('02/12/1955','mm/dd/yyyy'), 'Athletics','Vegan', 171, 52,65238197,'apeleteiro@gamil.com','Spain');
+Insert into ATHLETE values(2,'Lijiao','Gong',to_date('08/07/1985','mm/dd/yyyy'), 'Athletics', 'Italian', 169, 67,64339234,'lgong@gamil.com','Japan');
+Insert into ATHLETE values(3,'Nesthy','Petecio',to_date('09/24/1993','mm/dd/yyyy'), 'Boxing', 'American', 165, 45,62234587,null,'Finland');
+Insert into ATHLETE values(4,'Janja','Garnbret',to_date('10/28/1996','mm/dd/yyyy'), 'Climbing', 'Vegan', 170, 56,67893572,'jgarnbret@gamil.com','Croatia');
+Insert into ATHLETE values(5,'Sunsisa','Lee',to_date('12/23/1990','mm/dd/yyyy'), 'Gimnastics', 'American', 172, 50,63842014,'slee@gamil.com','USA');
+Insert into ATHLETE values(6,'Zhihui','Hou',to_date('04/21/1992','mm/dd/yyyy'), 'Weightlifting', 'Spanish', 165, 76,84653123,null,'China');
+Insert into ATHLETE values(7,'Sandra','Sanchez',to_date('01/12/1980','mm/dd/yyyy'), 'Karate', 'Spanish', 171, 65,65436975,'ssanchez@gamil.com','Canada');
+Insert into ATHLETE values(8,'Margaret','Macneil',to_date('06/27/1993','mm/dd/yyyy'), 'Swimming', 'Italian', 175, 63,56728463,'mmacneil@gamil.com','Brazil');
+Insert into ATHLETE values(9,'Chase','Karliz',to_date('01/16/1988','mm/dd/yyyy'), 'Swimming', 'American', 172, 77,67461385,null,'Portugal');
+Insert into ATHLETE values(10,'Rayssa','Leal',to_date('04/17/1995','mm/dd/yyyy'), 'Skateboarding', 'Vegan', 160, 50,64261945,null,'Germany');
+
+
+Insert into DELEGATION values('Spain',1);
+Insert into DELEGATION values('Japan',1);
+Insert into DELEGATION values('Finland',1);
+Insert into DELEGATION values('Croatia',1);
+Insert into DELEGATION values('USA',1);
+Insert into DELEGATION values('China',1);
+Insert into DELEGATION values('Canada',1);
+Insert into DELEGATION values('Brazil',1);
+Insert into DELEGATION values('Portugal',1);
+Insert into DELEGATION values('Germany',1);
+
+
+Insert into EMP_PHONE values('21', '123456789');
+Insert into EMP_PHONE values('22', '987654321');
+Insert into EMP_PHONE values('23', '135792468');
+Insert into EMP_PHONE values('24', '246813579');
+Insert into EMP_PHONE values('25', '864297531');
+Insert into EMP_PHONE values('26', '975318642');
+Insert into EMP_PHONE values('27', '147258369');
+Insert into EMP_PHONE values('28', '951753852');
+Insert into EMP_PHONE values('29', '789456123');
+Insert into EMP_PHONE values('30', '482615873');
+Insert into EMP_PHONE values('31', '482615873');
+Insert into EMP_PHONE values('32', '482615873');
+Insert into EMP_PHONE values('33', '482615873');
+
+
+Insert into EMPLOYEE values('21', 'Lucía', 'Martínez', 'lmartinez@gmail.com', 'Supervisor');
+Insert into EMPLOYEE values('22', 'Carmen', 'Río', 'crio@gmail.com', 'Maintenance');
+Insert into EMPLOYEE values('23', 'Pablo', 'Cid', 'pcid@gmail.com', 'Manager');
+Insert into EMPLOYEE values('24', 'Cristina', 'García', 'cgarcia@gmail.com', 'Official');
+Insert into EMPLOYEE values('25', 'Marta', 'Para', 'mpara@gmail.com', 'Security');
+Insert into EMPLOYEE values('26', 'Luis', 'Peña', null, 'Cleaning');
+Insert into EMPLOYEE values('27', 'Andrea', 'Gil', 'agil@gmail.com', 'Supervisor');
+Insert into EMPLOYEE values('28', 'Lucas', 'Martin', null, 'Maintenance');
+Insert into EMPLOYEE values('29', 'Javier', 'Sanchez', null,  'Official');
+Insert into EMPLOYEE values('30', 'Darío', 'Iglesias', 'diglesias@gmail.com', 'Cleaning');
+Insert into EMPLOYEE values('31', 'Marta', 'Minaya', 'mminaya@gmail.com', 'Official');
+Insert into EMPLOYEE values('32', 'Alejandra', 'Cabezas', null, 'Official');
+Insert into EMPLOYEE values('33', 'María', 'Soleto', 'msoleto@gmail.com', 'Official');
+Insert into EMPLOYEE values('34', 'Luis', 'Alvarez', null,'Cleaning');
+Insert into EMPLOYEE values('35', 'Victor', 'Cordero',null, 'Maintenance');
+Insert into EMPLOYEE values('36', 'Alvaro', 'Sagaseta',null, 'Security');
+Insert into EMPLOYEE values('37', 'Carmen', 'García', 'cgarcia@gmail.com', 'Manager');
+Insert into EMPLOYEE values('38', 'Carmen', 'García', 'cgarcia@gmail.com', 'Manager');
+Insert into EMPLOYEE values('39', 'Carmen', 'García', 'cgarcia@gmail.com', 'Manager');
+Insert into EMPLOYEE values('40', 'Cristina', 'García', 'cgarcia@gmail.com', 'Manager');
+Insert into EMPLOYEE values('41', 'Cristina', 'García', 'cgarcia@gmail.com', 'Manager');
+Insert into EMPLOYEE values('42', 'Cristina', 'García', 'cgarcia@gmail.com', 'Manager');
+Insert into EMPLOYEE values('43', 'Cristina', 'García', null,'Manager');
+Insert into EMPLOYEE values('44', 'Celia', 'García', null, 'Manager');
+Insert into EMPLOYEE values('45', 'Celia', 'García', null,'Manager');
+
+
+
+Insert into VENUE values('11', 'Tokio Heritage Zone');
+Insert into VENUE values('12', 'Tokio Bay Zone');
+Insert into VENUE values('13', 'Tokio Stadium');
+Insert into VENUE values('14', 'Rio de Janeiro');
+Insert into VENUE values('15', 'Sao Paulo');
+Insert into VENUE values('16', 'Salvador');
+Insert into VENUE values('17', 'London River Zone');
+Insert into VENUE values('18', 'London Velodrome');
+Insert into VENUE values('19', 'London Olympic Stadium');
+Insert into VENUE values('20', 'Barcelona');
+
+
+Insert into FACILITY_STAFF values('11', '41', '26');
+Insert into FACILITY_STAFF values('12', '51', '30');
+Insert into FACILITY_STAFF values('13', '43', '22');
+Insert into FACILITY_STAFF values('14', '44', '28');
+Insert into FACILITY_STAFF values('15', '45', '25');
+Insert into FACILITY_STAFF values('16', '53', '21');
+Insert into FACILITY_STAFF values('17', '47', '27');
+Insert into FACILITY_STAFF values('18', '48', '34');
+Insert into FACILITY_STAFF values('19', '49', '35');
+Insert into FACILITY_STAFF values('20', '56', '36');
+
+
+Insert into FACILITY values('11', '41', '130', '23', 'Hotel');
+Insert into FACILITY values('11', '42', '9', '23', 'Apartment');
+Insert into FACILITY values('13', '43', '45', '23', 'Restaurant');
+Insert into FACILITY values('14', '44', '200', '37', 'Hotel');				
+Insert into FACILITY values('15', '45', '15', '37', 'Restaurant');
+Insert into FACILITY values('15', '46', '84', '38', 'Restaurant');
+Insert into FACILITY values('17', '47', '106', '38', 'Hotel');
+Insert into FACILITY values('18', '48', '11', '39', 'Hotel');
+Insert into FACILITY values('19', '49', '65', '39', 'Restaurant');
+Insert into FACILITY values('18', '50', '29', '40', 'Restaurant');
+Insert into FACILITY values('12', '51', '150', '40', 'Hotel');
+Insert into FACILITY values('13', '52', '140', '41', 'Hotel');
+Insert into FACILITY values('16', '53', '140', '42', 'Hotel');
+Insert into FACILITY values('17', '54', '140', '43', 'Hotel');
+Insert into FACILITY values('19', '55', '140', '44', 'Hotel');
+Insert into FACILITY values('20', '56', '140', '45', 'Hotel');
+Insert into FACILITY values('12', '57', '140', '41', 'Restaurant');
+Insert into FACILITY values('11', '58', '65', '42', 'Restaurant');
+Insert into FACILITY values('14', '59', '65', '43', 'Restaurant');
+Insert into FACILITY values('16', '60', '65', '44', 'Restaurant');
+Insert into FACILITY values('20', '61', '65', '45', 'Restaurant');
+
+
+Insert into RESTAURANT values('13', '43', 'Vegan');
+Insert into RESTAURANT values('15', '45', 'Italian');
+Insert into RESTAURANT values('17', '47', 'American');
+Insert into RESTAURANT values('19', '49', 'Italian');
+Insert into RESTAURANT values('18', '50', 'Vegan');
+Insert into RESTAURANT values('12', '57', 'Italian');
+Insert into RESTAURANT values('11', '58', 'Spanish');
+Insert into RESTAURANT values('14', '59', 'Spanish');
+Insert into RESTAURANT values('16', '60', 'Vegan');
+Insert into RESTAURANT values('20', '61', 'Italian');
+
+
+Insert into HOTEL_DELEGATION values(11,41,'Spain',to_date('08/02/2021','mm/dd/yyyy'), to_date('09/16/2021','mm/dd/yyyy'));
+Insert into HOTEL_DELEGATION values(14,44,'Japan',to_date('06/28/2021','mm/dd/yyyy'), to_date('08/29/2021','mm/dd/yyyy'));
+Insert into HOTEL_DELEGATION values(15,46,'Finland',to_date('08/01/2020','mm/dd/yyyy'), to_date('09/17/2020','mm/dd/yyyy'));
+Insert into HOTEL_DELEGATION values(18,48,'Croatia',to_date('07/26/2021','mm/dd/yyyy'), to_date('09/01/2021','mm/dd/yyyy'));
+Insert into HOTEL_DELEGATION values(12,51,'USA',to_date('06/24/2019','mm/dd/yyyy'), to_date('08/04/2019','mm/dd/yyyy'));
+Insert into HOTEL_DELEGATION values(13,52,'China',to_date('08/22/2021','mm/dd/yyyy'), to_date('09/27/2021','mm/dd/yyyy'));
+Insert into HOTEL_DELEGATION values(16,53,'Canada',to_date('06/11/2020','mm/dd/yyyy'), to_date('08/30/2020','mm/dd/yyyy'));
+Insert into HOTEL_DELEGATION values(17,54,'Brazil',to_date('08/12/2020','mm/dd/yyyy'), to_date('09/27/2020','mm/dd/yyyy'));
+Insert into HOTEL_DELEGATION values(19,55,'Portugal',to_date('07/26/2021','mm/dd/yyyy'), to_date('09/17/2021','mm/dd/yyyy'));
+Insert into HOTEL_DELEGATION values(20,56,'Germany',to_date('06/14/2019','mm/dd/yyyy'), to_date('08/24/2019','mm/dd/yyyy'));
+
+
+Insert into ATTENDS values(24, 100, to_date('10/12/2018','mm/dd/yyyy'), 'Judge');
+Insert into ATTENDS values(29, 101, to_date('07/23/2009','mm/dd/yyyy'), 'Observer');
+Insert into ATTENDS values(31, 102, to_date('07/25/2009','mm/dd/yyyy'), 'Observer');
+Insert into ATTENDS values(32, 103, to_date('05/15/2017','mm/dd/yyyy'), 'Judge');
+Insert into ATTENDS values(33, 104, to_date('08/17/2010','mm/dd/yyyy'), 'Judge');
+Insert into ATTENDS values(24, 105, to_date('04/04/2015','mm/dd/yyyy'), 'Observer');
+Insert into ATTENDS values(29, 106, to_date('02/18/2019','mm/dd/yyyy'), 'Judge');
+Insert into ATTENDS values(31, 100, to_date('04/12/2018','mm/dd/yyyy'), 'Observer');
+Insert into ATTENDS values(32, 105, to_date('04/04/2015','mm/dd/yyyy'), 'Observer');
+Insert into ATTENDS values(33, 102, to_date('07/25/2009','mm/dd/yyyy'), 'Judge');
+
+
+Insert into EVENT values(100, 'Boxing', 'Spiros Louis', to_date('04/12/2018','mm/dd/yyyy'), 102, 1, 2);
+Insert into EVENT values(101, 'Athletics', 'Panathenaic Stadium', to_date(' 07/23/2009','mm/dd/yyyy'), 107, 2, 3);
+Insert into EVENT values(102, 'Swimming', 'Vincennes Velodrome', to_date(' 07/25/2009','mm/dd/yyyy'), 98, 2, 2);
+Insert into EVENT values(103, 'Swimming', 'Vincennes Velodrome', to_date(' 05/15/2017','mm/dd/yyyy'), 92, 2, 2);
+Insert into EVENT values(104, 'Skateboarding', 'Francis Field', to_date('08/17/2010','mm/dd/yyyy'), 104, 1, 2);
+Insert into EVENT values(105, 'Climbing', 'Olympisch Stadion', to_date(' 04/04/2015','mm/dd/yyyy'), 125, 1, 2);
+Insert into EVENT values(106, 'Karate', 'Los Angeles Memorial Coliseum', to_date(' 02/18/2019','mm/dd/yyyy'), 81, 1, 1);
+Insert into EVENT values(107, 'Skateboarding', 'Spiros Louis', to_date('06/25/2018','mm/dd/yyyy'), 26, 1, 1);
+Insert into EVENT values(108, 'Weightlifting', 'Wembley Stadium', to_date(' 01/12/2004','mm/dd/yyyy'), 41, 1, 1);
+Insert into EVENT values(109, 'Gimnastics', 'Blyth Arena', to_date('08/30/11','mm/dd/yyyy'), 56, 1, 2);
+Insert into EVENT values(110, 'Athletics', 'Nanjing Olympic', to_date(' 12/21/12','mm/dd/yyyy'), 113, 2, 1);
+Insert into EVENT values(111, 'Karate', 'Nanjing Olympic', to_date('01/03/21','mm/dd/yyyy'), 114, 1, 2);
+
+
+Insert into SPORT_COMPLEX values('Spiros Louis', 8, 'Leof. Olimpionikou Spirou, 151', 23, 11, 'Multisport');
+Insert into SPORT_COMPLEX values('Panathenaic Stadium', 9, 'Avda. de la Diversidad, 14', 23, 12, 'Multisport');
+Insert into SPORT_COMPLEX values('Vincennes Velodrome', 6, '51 Gravelle, 75012 Paris', 38, 13, 'Onesport');
+Insert into SPORT_COMPLEX values('Francis Field', 4, 'St. Louis, MO 6310', 39, 14, 'Onesport');
+Insert into SPORT_COMPLEX values('Olympisch Stadion', 12, '1182 DB Amsterdam', 39, 15, 'Multisport');
+Insert into SPORT_COMPLEX values('Los Angeles Memorial Coliseum', 10, '3911 Figueroa St, LA', 40, 16, 'Multisport');
+Insert into SPORT_COMPLEX values('Wembley Stadium', 11, 'London HA9 0WS', 40, 17, 'Onesport');
+Insert into SPORT_COMPLEX values('Blyth Arena', 10, 'Squaw Valley, CA', 41, 18, 'Multisport');
+Insert into SPORT_COMPLEX values('Nanjing Olympic', 10, '222 Jiangdong Middle Rd', 41, 19, 'Multisport');
+Insert into SPORT_COMPLEX values('Estadio Lluís Companys', 12, 'Passeig Olímpic, 08038', 43, 20, 'Onesport'); 
+Insert into SPORT_COMPLEX values('Yves-du-Manoir', 8, '500 Av. De Vanières', 42, 12, 'Multisport');
+Insert into SPORT_COMPLEX values('Estadio Olímpico Luzhniki', 9, 'ul. Luzhniki, 24, Moscow', 44, 13, 'Multisport');
+Insert into SPORT_COMPLEX values('Bislett stadion', 11, 'Louises gate 1, 0168 Oslo', 44, 12, 'Multisport');
+Insert into SPORT_COMPLEX values('Stadio Comunale', 11, 'Via Filadelfia, Torino', 45, 15, 'Multisport');
+
+
+Insert into MULTI_COMPLEX values('Spiros Louis',100, 5, 2, 3);
+Insert into MULTI_COMPLEX values('Panathenaic Stadium',100, 6, 3, 3);
+Insert into MULTI_COMPLEX values('Olympisch Stadion',100, 7, 3, 4);
+Insert into MULTI_COMPLEX values('Los Angeles Memorial Coliseum',100, 2, 2, 0);
+Insert into MULTI_COMPLEX values('Blyth Arena',100, 4, 1, 3);
+Insert into MULTI_COMPLEX values('Nanjing Olympic', 100,3, 2, 1);
+Insert into MULTI_COMPLEX values('Yves-du-Manoir',100, 2, 1, 1);
+Insert into MULTI_COMPLEX values('Estadio Olímpico Luzhniki',100, 4, 2, 2);
+Insert into MULTI_COMPLEX values('Bislett stadion', 100,3, 2, 1);
+Insert into MULTI_COMPLEX values('Stadio Comunale',100, 7, 1, 6);
+
+
+Insert into EQUIPMENT values(104, 'balls');
+Insert into EQUIPMENT values(105, 'googles');
+Insert into EQUIPMENT values(107, 'helmets');
+Insert into EQUIPMENT values(111, 'hurdles');
+Insert into EQUIPMENT values(109, 'inflator');
+Insert into EQUIPMENT values(106, 'karateguis');
+Insert into EQUIPMENT values(110, 'overgrips');
+Insert into EQUIPMENT values(101, 'poles');
+Insert into EQUIPMENT values(102, 'trampoline');
+Insert into EQUIPMENT values(108, 'weights');
+Insert into EQUIPMENT values(100, 'wristbands');
+
+Insert into PARTICIPATES values(100, 3, to_date('04/12/2018','mm/dd/yyyy'));
+Insert into PARTICIPATES values(101, 1, to_date('07/23/2009','mm/dd/yyyy'));
+Insert into PARTICIPATES values(101, 2, to_date('07/23/2009','mm/dd/yyyy'));
+Insert into PARTICIPATES values(102, 8, to_date('07/25/2009','mm/dd/yyyy'));
+Insert into PARTICIPATES values(102, 9, to_date('07/25/2009','mm/dd/yyyy'));
+Insert into PARTICIPATES values(103, 8, to_date('05/15/2017','mm/dd/yyyy'));
+Insert into PARTICIPATES values(103, 9, to_date('05/15/2017','mm/dd/yyyy'));
+Insert into PARTICIPATES values(104, 10, to_date('08/17/2010','mm/dd/yyyy'));
+Insert into PARTICIPATES values(105, 4, to_date('04/4/2015','mm/dd/yyyy'));
+Insert into PARTICIPATES values(106, 7, to_date('02/18/2019','mm/dd/yyyy'));
+Insert into PARTICIPATES values(107, 10, to_date('06/25/2018','mm/dd/yyyy'));
+Insert into PARTICIPATES values(108, 6, to_date('01/12/2004','mm/dd/yyyy'));
+Insert into PARTICIPATES values(109, 5, to_date('08/30/2011','mm/dd/yyyy'));
+Insert into PARTICIPATES values(110, 1, to_date('12/21/2012','mm/dd/yyyy'));
+Insert into PARTICIPATES values(110, 2, to_date('12/21/2012','mm/dd/yyyy'));
+Insert into PARTICIPATES values(111, 7, to_date('01/3/2021','mm/dd/yyyy'));
+
+SELECT Code,Sport,COUNT(*) AS Num_Participants
+FROM EVENT INNER JOIN PARTICIPATES
+ON PARTICIPATES.Event=Code
+GROUP BY Code, Sport
+ORDER BY Num_Participants;
+
+SELECT ID_fac, Num_Athletes
+FROM HOTEL_DELEGATION INNER JOIN DELEGATION
+ON DELEGATION.Country=Delegation
+WHERE (Checkin_date>to_date('05/30/2021','mm/dd/yyyy') AND Checkin_date<to_date('10/01/2021','mm/dd/yyyy'));
+
